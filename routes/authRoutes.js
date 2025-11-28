@@ -3,7 +3,8 @@ const router = express.Router();
 const {
   registerUser,
   loginUser,
-  getCurrentUser
+  getCurrentUser,
+  getProfileDetails
 } = require('../controller/authController');
 const { authMiddleware } = require('../middlewares/authMiddleware');
 const { uploadSingleProfile } = require('../middlewares/uploadMiddleware');
@@ -14,6 +15,7 @@ router.post('/login', loginUser);
 
 // Protected routes
 router.get('/me', authMiddleware, getCurrentUser);
+router.get('/profile', authMiddleware, getProfileDetails);
 
 module.exports = router;
 

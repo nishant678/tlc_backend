@@ -200,9 +200,68 @@ const getCurrentUser = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Get user profile details
+ * @route   GET /api/auth/profile
+ * @access  Private
+ */
+const getProfileDetails = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.user.id;
+    
+    // Get user details
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Get profile image
+    const profile = await UserProfile.findByUserId(userId);
+
+    // Prepare response data (exclude password)
+    const userData = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      mobile_number: user.mobile_number,
+      dob: user.dob,
+      gender: user.gender,
+      created_at: user.created_at,
+      updated_at: user.updated_at
+    };
+
+    const profileData = profile ? {
+      id: profile.id,
+      image_url: profile.image_url,
+      created_at: profile.created_at,
+      updated_at: profile.updated_at
+    } : null;
+
+    res.status(200).json({
+      success: true,
+      message: 'Profile details retrieved successfully',
+      data: {
+        user: userData,
+        profile: profileData
+      }
+    });
+  } catch (error) {
+    console.error('Get profile error:', error);
+    res.status(500).json({
+      success: false,
+      message: `Error retrieving profile: ${error.message}`
+    });
+  }
+});
+
 module.exports = {
   registerUser,
   loginUser,
-  getCurrentUser
+  getCurrentUser,
+  getProfileDetails
 };
 
