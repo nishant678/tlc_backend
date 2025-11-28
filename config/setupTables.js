@@ -54,6 +54,56 @@ async function createUserProfilesTable() {
 }
 
 /**
+ * Create question_types table
+ */
+async function createQuestionTypesTable() {
+  try {
+    await query(`
+      CREATE TABLE IF NOT EXISTS question_types (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        type_name VARCHAR(255) UNIQUE NOT NULL,
+        icon VARCHAR(500) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_type_name (type_name)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+    console.log('✅ Question types table created successfully');
+  } catch (error) {
+    console.error('❌ Error creating question_types table:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * Create question_answers table
+ */
+async function createQuestionAnswersTable() {
+  try {
+    await query(`
+      CREATE TABLE IF NOT EXISTS question_answers (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        type_id INT NOT NULL,
+        question TEXT NOT NULL,
+        option1 VARCHAR(500) NOT NULL,
+        option2 VARCHAR(500) NOT NULL,
+        option3 VARCHAR(500) NOT NULL,
+        option4 VARCHAR(500) NOT NULL,
+        correct_answer INT NOT NULL CHECK (correct_answer IN (1, 2, 3, 4)),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (type_id) REFERENCES question_types(id) ON DELETE CASCADE,
+        INDEX idx_type_id (type_id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+    console.log('✅ Question answers table created successfully');
+  } catch (error) {
+    console.error('❌ Error creating question_answers table:', error.message);
+    throw error;
+  }
+}
+
+/**
  * Run all setup functions
  */
 async function setupTables() {
@@ -69,6 +119,8 @@ async function setupTables() {
     // Create tables
     await createUsersTable();
     await createUserProfilesTable();
+    await createQuestionTypesTable();
+    await createQuestionAnswersTable();
 
     console.log('✅ All tables setup completed successfully');
   } catch (error) {
@@ -80,6 +132,8 @@ async function setupTables() {
 module.exports = {
   createUsersTable,
   createUserProfilesTable,
+  createQuestionTypesTable,
+  createQuestionAnswersTable,
   setupTables
 };
 

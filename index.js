@@ -8,6 +8,8 @@ const { errorHandler, notFound } = require('./middlewares/errorHandler');
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
+const questionTypeRoutes = require('./routes/questionTypeRoutes');
+const questionAnswerRoutes = require('./routes/questionAnswerRoutes');
 
 // Initialize Express app
 const app = express();
@@ -31,6 +33,8 @@ app.get('/health', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/question-types', questionTypeRoutes);
+app.use('/api/question-answers', questionAnswerRoutes);
 
 // Error handling middleware
 app.use(notFound);
@@ -52,7 +56,7 @@ async function startServer() {
     // Test database connection
     console.log('🔄 Testing database connection...');
     const isConnected = await testConnection();
-    
+
     if (!isConnected) {
       throw new Error('Failed to connect to database');
     }
