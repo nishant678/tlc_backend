@@ -2,13 +2,18 @@ const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 const User = require("../model/User");
 
+// Get JWT secret with fallback to default
+const getJwtSecret = () => {
+  return process.env.JWT_SECRET || 'default_dev_secret_key_change_in_production_min_32_chars_required';
+};
+
 const authMiddleware = asyncHandler(async (req, res, next) => {
     let token;
     if(req?.headers?.authorization?.startsWith("Bearer")){
         token = req.headers.authorization.split(' ')[1];
         try{
             if(token) {
-                const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                const decoded = jwt.verify(token, getJwtSecret());
                 const user = await User.findOne({ id: decoded?.id });
                 
                 if (!user) {

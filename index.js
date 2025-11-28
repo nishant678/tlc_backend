@@ -1,4 +1,3 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -46,13 +45,16 @@ const PORT = process.env.PORT || 8000;
 async function startServer() {
   try {
     // Check for JWT_SECRET (warning instead of error)
-    if (!process.env.JWT_SECRET) {
+    const defaultSecret = 'default_dev_secret_key_change_in_production_min_32_chars_required';
+    const isUsingDefaultSecret = !process.env.JWT_SECRET;
+    
+    if (isUsingDefaultSecret) {
       console.warn('⚠️  WARNING: JWT_SECRET is not set in environment variables!');
       console.warn('💡 Authentication features may not work properly.');
       console.warn('💡 Please set JWT_SECRET in your environment variables:');
       console.warn('   JWT_SECRET=your_super_secret_jwt_key_here_min_32_chars');
       // Use a default development secret (NOT recommended for production)
-      process.env.JWT_SECRET = 'default_dev_secret_key_change_in_production_min_32_chars_required';
+      process.env.JWT_SECRET = defaultSecret;
       console.warn('⚠️  Using default JWT_SECRET. This is NOT secure for production!');
     } else {
       console.log('✅ JWT_SECRET is configured');
@@ -75,7 +77,7 @@ async function startServer() {
       console.log(`🚀 Server is running on port ${PORT}`);
       console.log(`📍 Health check: http://localhost:${PORT}/health`);
       console.log(`📍 API base URL: http://localhost:${PORT}/api`);
-      if (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'default_dev_secret_key_change_in_production_min_32_chars_required') {
+      if (isUsingDefaultSecret) {
         console.warn('⚠️  Remember to set JWT_SECRET environment variable for production!');
       }
     });

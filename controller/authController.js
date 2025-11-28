@@ -76,7 +76,7 @@ const registerUser = asyncHandler(async (req, res) => {
         return res.status(201).json({
           message: "New User Added",
           user: userWithProfiles,
-          error: "Token generation failed. Please set JWT_SECRET in .env file."
+          error: "Token generation failed. Please set JWT_SECRET environment variable."
         });
       }
 
@@ -157,7 +157,7 @@ const loginUser = asyncHandler(async (req, res) => {
     } catch (error) {
       return res.status(200).json({
         success: true,
-        message: 'Login successful, but token generation failed. Please set JWT_SECRET in .env file.',
+        message: 'Login successful, but token generation failed. Please set JWT_SECRET environment variable.',
         error: error.message,
         user: userWithProfiles
       });
