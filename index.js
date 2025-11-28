@@ -47,7 +47,7 @@ async function startServer() {
     // Check for JWT_SECRET (warning instead of error)
     const defaultSecret = 'default_dev_secret_key_change_in_production_min_32_chars_required';
     const isUsingDefaultSecret = !process.env.JWT_SECRET;
-    
+
     if (isUsingDefaultSecret) {
       console.warn('⚠️  WARNING: JWT_SECRET is not set in environment variables!');
       console.warn('💡 Authentication features may not work properly.');
@@ -62,10 +62,21 @@ async function startServer() {
 
     // Test database connection
     console.log('🔄 Testing database connection...');
+    console.log('Database config:', {
+      host: process.env.DB_HOST || 'localhost',
+      port: process.env.DB_PORT || 3306,
+      user: process.env.DB_USER || 'root',
+      database: process.env.DB_NAME || 'tlc_db',
+      password: process.env.DB_PASSWORD || 'Welcome@1998',
+    });
+
     const isConnected = await testConnection();
 
     if (!isConnected) {
-      throw new Error('Failed to connect to database');
+      console.error('❌ Cannot start server without database connection.');
+      console.error('💡 Please configure database connection in environment variables:');
+      console.error('   DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT');
+      throw new Error('Failed to connect to database. Please check your database configuration.');
     }
 
     // Setup database tables
