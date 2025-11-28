@@ -24,7 +24,7 @@ class User {
 
       const sql = `
         INSERT INTO users (mobile_number, email, password, name, dob, gender)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?)
       `;
 
       const params = [
