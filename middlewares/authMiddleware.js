@@ -1,11 +1,8 @@
+const User = require("../model/userModel");
 const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
-const User = require("../model/User");
 
-// Get JWT secret with fallback to default
-const getJwtSecret = () => {
-  return process.env.JWT_SECRET || 'default_dev_secret_key_change_in_production_min_32_chars_required';
-};
+const JWT_SECRET = "your_super_secret_jwt_key_change_this_in_production";
 
 const authMiddleware = asyncHandler(async (req, res, next) => {
     let token;
@@ -13,45 +10,26 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
         token = req.headers.authorization.split(' ')[1];
         try{
             if(token) {
-                const decoded = jwt.verify(token, getJwtSecret());
-                const user = await User.findOne({ id: decoded?.id });
-                
-                if (!user) {
-                    return res.status(401).json({
-                        success: false,
-                        message: "User not found. Token invalid."
-                    });
-                }
-                
-                // Remove password from user object
-                const { password, ...userWithoutPassword } = user;
-                req.user = userWithoutPassword;
+                const decode = jwt.verify(token, JWT_SECRET);
+                const user = await User.findById(decode?.id);
+                req.user =user;
                 next();
             }
         }catch(error){
-            return res.status(401).json({
-                success: false,
-                message: "Not Authorized. Token expired or invalid. Please login again."
-            });
+            throw new Error("Not Authorized token expired, Please Login agin");
         }
     }else{
-        return res.status(401).json({
-            success: false,
-            message: "There is no token attached to header"
-        });
+        throw new Error("There is no token attached to header");
     }
 });
 
 const isAdmin = asyncHandler(async (req, res, next) => {
     const { email } = req.user;
-    const adminUser = await User.findByEmail(email);
-    if(!adminUser || adminUser.role !== "admin") {
-        return res.status(403).json({
-            success: false,
-            message: "You are not an admin"
-        });
+    const adminUser = await User.findOne({ email });
+    if(adminUser.role !== "admin") {
+        throw new Error("You are not an admin");
+    }else{
+        next();
     }
-    next();
-});
-
+})
 module.exports = { authMiddleware, isAdmin };
