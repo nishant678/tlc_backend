@@ -2,12 +2,10 @@ const User = require("../model/userModel");
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 const { generateToken } = require("../config/jwtToken");
-const  httpStatus = require("http-status");
+// const httpStatus = require("http-status");
 // const { generateToken } = require("../config/refreshtoken");
 
-
-
-
+// REGISTER
 const createUser = async (req, res) => {
 
   try {
@@ -15,24 +13,24 @@ const createUser = async (req, res) => {
       if (err) {
         console.log(err);
       } else {
-        let ExistingUser = await User.findOne({ email: req.body.email })
-        if (ExistingUser) {
-          res.status(httpStatus.BAD_REQUEST).json({message: "User Already Exists, Try Login!"})
+        let existingUser = await User.findOne({ email: req.body.email })
+        if (existingUser) {
+          return res.status(400).json({ message: "User Already Exists, Try Login!" })
         } else {
           const newUser = new User({
-            firstName: req.body.firstName, lastName: req.body.lastName,
+            name: req.body.name,
             mobile: req.body.mobile,
             email: req.body.email,
-            mobile: req.body.mobile, password: hash,
+            password: hash,
           })
           await newUser.save()
-          res.status(httpStatus.CREATED).json({ message: "New User Added", user: newUser })
+          return res.status(201).json({ message: "New User Added", user: newUser })
         }
       }
     })
   } catch (e) {
     console.log(e);
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json(`Registration Error: - ${e}`)
+    return res.status(500).json({ message: `Registration Error: - ${e}` })
   }
 
 
@@ -73,8 +71,7 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
       success: true,
       body: {
         _id: findUser?._id,
-        firstname: findUser?.firstname,
-        lastname: findUser?.lastname,
+        name: findUser?.name,
         email: findUser?.email,
         mobile: findUser?.mobile,
         token: generateToken(findUser?._id),
@@ -117,8 +114,7 @@ const updatedUser = asyncHandler(async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
       id,
       {
-        firstname: req?.body?.firstname,
-        lastname: req?.body?.lastname,
+        name: req?.body?.name,
         email: req?.body?.email,
         mobile: req?.body?.mobile,
       },

@@ -1,5 +1,6 @@
 const express = require('express');
 const dbConnect = require('./config/dbConnect');
+const initializeCollections = require('./config/initializeCollections');
 const app = express();
 const PORT = 5000;
 const authRouter = require("./routes/authRoutes");
@@ -22,6 +23,7 @@ app.use(errorHandler);
 const startServer = async () => {
     try {
         await dbConnect();
+        await initializeCollections();
         app.listen(PORT, ()=>{
             console.log(`Server is running at PORT ${PORT}`);
         });
