@@ -1,9 +1,11 @@
 const express = require('express');
-const { createUser, loginUserCtrl, getAllUser, updatedUser, getUserById, deleteUser, blockUser, unblockUser } = require("../controller/userCtrl");
+const { createUser, loginUserCtrl } = require("../controller/userCtrl");
+const upload = require("../middlewares/upload");
 
-
-const { authMiddleware, isAdmin } = require("../middlewares/authMiddleware");
 const router = express.Router();
-router.post('/register', createUser);
+
+// Use upload.single("image") for formData
+router.post('/register', upload.single("image"), createUser);
 router.post('/login', loginUserCtrl);
+
 module.exports = router;

@@ -14,5 +14,3 @@ const initializeCollections = async () => {
 };
 
 module.exports = initializeCollections;
-
-
