@@ -9,11 +9,13 @@ const cors = require("cors");
 const { notFound, errorHandler } = require('./middlewares/errorHandler');
 // const { authMiddleware } = require('./middlewares/authMiddleware');
 const cookieParser = require("cookie-parser");
+const questionTypeRouter = require("./routes/questionTypeRoutes");
 
 app.use(bodyParser.json());
-app.use(cors({origin: '*'}));
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(cors({ origin: '*' }));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/api/user', authRouter);
+app.use("/api/questiontype", questionTypeRouter);
 app.use(cookieParser());
 
 app.use(notFound);
@@ -24,7 +26,7 @@ const startServer = async () => {
     try {
         await dbConnect();
         await initializeCollections();
-        app.listen(PORT, ()=>{
+        app.listen(PORT, () => {
             console.log(`Server is running at PORT ${PORT}`);
         });
     } catch (error) {
