@@ -65,7 +65,53 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
   });
 });
 
+const getUserDetails = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  const user = await User.findById(userId).select("-password");
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  res.status(200).json({
+    status: true,
+    message: "User details fetched successfully",
+    data: user
+  });
+});
+
+const updateUserDetails = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  const updateData = {
+    name: req.body.name,
+    mobile: req.body.mobile,
+    email: req.body.email,
+  };
+
+  // If new image uploaded
+  if (req.file) {
+    updateData.image = req.file.filename;
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    updateData,
+    { new: true }
+  ).select("-password");
+
+  res.status(200).json({
+    status: true,
+    message: "User updated successfully",
+    data: updatedUser
+  });
+});
+
+
+
 module.exports = {
   createUser,
   loginUserCtrl,
+  getUserDetails,
+  updateUserDetails,
 };
