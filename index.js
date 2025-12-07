@@ -10,12 +10,14 @@ const { notFound, errorHandler } = require('./middlewares/errorHandler');
 // const { authMiddleware } = require('./middlewares/authMiddleware');
 const cookieParser = require("cookie-parser");
 const questionTypeRouter = require("./routes/questionTypeRoutes");
+const questionRouter = require("./routes/questionRoute");
 
 app.use(bodyParser.json());
 app.use(cors({ origin: '*' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/api/user', authRouter);
 app.use("/api/questiontype", questionTypeRouter);
+app.use("/api/question", questionRouter);
 app.use(cookieParser());
 
 app.use(notFound);
