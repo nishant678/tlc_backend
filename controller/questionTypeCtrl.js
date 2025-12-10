@@ -28,10 +28,21 @@ const addQuestionType = asyncHandler(async (req, res) => {
 const getQuestionTypeList = asyncHandler(async (req, res) => {
     const list = await QuestionType.find().sort({ createdAt: -1 });
 
+    // Add full image path to each item
+    const listWithImagePath = list.map(item => {
+        const itemObj = item.toObject();
+        if (itemObj.image) {
+            // Construct full image URL
+            const baseUrl = `${req.protocol}://${req.get('host')}`;
+            itemObj.image = `${baseUrl}/uploads/${itemObj.image}`;
+        }
+        return itemObj;
+    });
+
     res.status(200).json({
         status: true,
         message: "Question Type List fetched successfully",
-        data: list
+        data: listWithImagePath
     });
 });
 
