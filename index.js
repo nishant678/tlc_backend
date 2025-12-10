@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const dbConnect = require('./config/dbConnect');
 const initializeCollections = require('./config/initializeCollections');
 const app = express();
@@ -15,7 +16,8 @@ const questionRouter = require("./routes/questionRoute");
 app.use(bodyParser.json());
 app.use(cors({ origin: '*' }));
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use('/uploads', express.static('uploads')); // Serve static files from uploads folder
+// Serve static files from uploads folder
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/user', authRouter);
 app.use("/api/questiontype", questionTypeRouter);
 app.use("/api/question", questionRouter);
